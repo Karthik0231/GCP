@@ -18,25 +18,35 @@ import { RealWorldProject } from '../../types';
 export const ProjectsView: React.FC = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string>(REAL_WORLD_PROJECTS[0].id);
   const [copiedSnippetIndex, setCopiedSnippetIndex] = useState<number | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const activeProject = REAL_WORLD_PROJECTS.find(p => p.id === selectedProjectId) || REAL_WORLD_PROJECTS[0];
 
-  const handleCopy = (text: string, idx: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedSnippetIndex(idx);
-    setTimeout(() => setCopiedSnippetIndex(null), 2000);
+  const handleCopy = async (text: string, idx: number) => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
+      await navigator.clipboard.writeText(text);
+      setCopyError(null);
+      setCopiedSnippetIndex(idx);
+      setTimeout(() => setCopiedSnippetIndex(null), 2000);
+    } catch {
+      setCopiedSnippetIndex(null);
+      setCopyError('Copy failed. Select the snippet and copy it manually.');
+      setTimeout(() => setCopyError(null), 4000);
+    }
   };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-6">
+        <p className="sr-only" aria-live="polite">{copyError || (copiedSnippetIndex !== null ? 'Copied to clipboard.' : '')}</p>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
           <FolderKanban className="w-7 h-7 text-amber-400" />
           Real-World Production Projects
         </h2>
         <p className="text-slate-400 text-sm mt-1">
-          Complete production-grade applications with full repository architecture, infrastructure manifests, and automated CI/CD deployment pipelines.
+          Build-focused Google Cloud projects with architecture notes, implementation guidance, and operational trade-offs.
         </p>
       </div>
 
@@ -50,18 +60,13 @@ export const ProjectsView: React.FC = () => {
           {REAL_WORLD_PROJECTS.map(proj => {
             const isSelected = proj.id === activeProject.id;
             return (
-              <div
+              <button
+                type="button"
                 key={proj.id}
-                role="button"
-                tabIndex={0}
+                aria-pressed={isSelected}
+                aria-label={`Open project ${proj.number}: ${proj.title}`}
                 onClick={() => setSelectedProjectId(proj.id)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    setSelectedProjectId(proj.id);
-                  }
-                }}
-                className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                className={`w-full text-left p-3.5 rounded-xl border cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                   isSelected 
                     ? 'bg-amber-950/30 border-amber-500/60 shadow-md shadow-amber-950/20' 
                     : 'bg-[#0b101d] border-slate-800 hover:border-slate-700'
@@ -90,7 +95,7 @@ export const ProjectsView: React.FC = () => {
                     </span>
                   )}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

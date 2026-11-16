@@ -74,8 +74,11 @@ export const GlobalSearchModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex justify-center p-4 pt-16 sm:pt-24 animate-fadeIn">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex justify-center p-4 pt-16 sm:pt-24 animate-fadeIn" role="presentation">
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-label="Global search"
         className="w-full max-w-2xl bg-[#0b0f19] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -91,6 +94,8 @@ export const GlobalSearchModal: React.FC = () => {
             className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
           />
           <button
+            type="button"
+            aria-label="Close search"
             onClick={() => setIsSearchOpen(false)}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
           >
@@ -110,19 +115,21 @@ export const GlobalSearchModal: React.FC = () => {
               </div>
               <div className="space-y-1">
                 {matchedTopics.map(topic => (
-                  <div
+                  <button
+                    type="button"
                     key={topic.id}
+                    aria-label={`Open topic ${topic.title}`}
                     onClick={() => handleSelectTopic(topic.id)}
-                    className="p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-cyan-500/40 cursor-pointer flex items-center justify-between transition-colors"
+                    className="w-full text-left p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-cyan-500/40 flex items-center justify-between transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   >
-                    <div>
-                      <div className="font-semibold text-slate-200">{topic.title}</div>
-                      <div className="text-[11px] text-slate-400 line-clamp-1">{topic.subtitle}</div>
-                    </div>
+                    <span>
+                      <span className="block font-semibold text-slate-200">{topic.title}</span>
+                      <span className="block text-[11px] text-slate-400 line-clamp-1">{topic.subtitle}</span>
+                    </span>
                     <span className="text-cyan-400 font-mono text-[10px] px-2 py-0.5 rounded bg-slate-950 border border-slate-800">
                       {topic.level}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -137,19 +144,21 @@ export const GlobalSearchModal: React.FC = () => {
               </div>
               <div className="space-y-1">
                 {matchedCommands.map(cmd => (
-                  <div
+                  <button
+                    type="button"
                     key={cmd.id}
+                    aria-label={`Open command ${cmd.command}`}
                     onClick={() => handleSelectTab('commands')}
-                    className="p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-blue-500/40 cursor-pointer flex items-center justify-between transition-colors font-mono"
+                    className="w-full text-left p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-blue-500/40 flex items-center justify-between transition-colors font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
-                    <div>
+                    <span>
                       <code className="text-cyan-300 font-bold">{cmd.command}</code>
-                      <div className="text-[11px] text-slate-400 line-clamp-1 font-sans">{cmd.description}</div>
-                    </div>
+                      <span className="block text-[11px] text-slate-400 line-clamp-1 font-sans">{cmd.description}</span>
+                    </span>
                     <span className="text-slate-400 text-[10px] px-1.5 py-0.5 bg-slate-950 rounded">
                       {cmd.category}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -164,19 +173,21 @@ export const GlobalSearchModal: React.FC = () => {
               </div>
               <div className="space-y-1">
                 {matchedLabs.map(lab => (
-                  <div
+                  <button
+                    type="button"
                     key={lab.id}
+                    aria-label={`Open lab ${lab.title}`}
                     onClick={() => handleSelectTab('labs')}
-                    className="p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 cursor-pointer flex items-center justify-between transition-colors"
+                    className="w-full text-left p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 flex items-center justify-between transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
                   >
-                    <div>
-                      <div className="font-semibold text-slate-200">{lab.title}</div>
-                      <div className="text-[11px] text-slate-400 line-clamp-1">{lab.objective}</div>
-                    </div>
+                    <span>
+                      <span className="block font-semibold text-slate-200">{lab.title}</span>
+                      <span className="block text-[11px] text-slate-400 line-clamp-1">{lab.objective}</span>
+                    </span>
                     <span className="text-emerald-400 font-mono text-[10px]">
                       {lab.estimatedCost}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -191,19 +202,21 @@ export const GlobalSearchModal: React.FC = () => {
               </div>
               <div className="space-y-1">
                 {matchedProjects.map(proj => (
-                  <div
+                  <button
+                    type="button"
                     key={proj.id}
+                    aria-label={`Open project ${proj.title}`}
                     onClick={() => handleSelectTab('projects')}
-                    className="p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-amber-500/40 cursor-pointer flex items-center justify-between transition-colors"
+                    className="w-full text-left p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-amber-500/40 flex items-center justify-between transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                   >
-                    <div>
-                      <div className="font-semibold text-slate-200">{proj.title}</div>
-                      <div className="text-[11px] text-slate-400 line-clamp-1">{proj.description}</div>
-                    </div>
+                    <span>
+                      <span className="block font-semibold text-slate-200">{proj.title}</span>
+                      <span className="block text-[11px] text-slate-400 line-clamp-1">{proj.description}</span>
+                    </span>
                     <span className="text-amber-400 font-mono text-[10px]">
                       Project #{proj.number}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>

@@ -39,6 +39,8 @@ export const ArchitectureView: React.FC = () => {
       <div className="flex flex-wrap gap-2 mb-6">
         {ARCHITECTURE_CATALOG.map(arch => (
           <button
+            type="button"
+            aria-pressed={arch.id === activeArch.id}
             key={arch.id}
             onClick={() => {
               setSelectedArchId(arch.id);
@@ -80,9 +82,10 @@ export const ArchitectureView: React.FC = () => {
                   <button
                     type="button"
                     aria-pressed={isSelected}
+                    aria-label={`Inspect ${node.label}, ${node.service}`}
                     key={node.id}
                     onClick={() => setSelectedNodeId(node.id)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
                       isSelected
                         ? 'bg-purple-950/40 border-purple-500 shadow-lg shadow-purple-950/40 ring-1 ring-purple-500/40'
                         : 'bg-slate-950 border-slate-800 hover:border-slate-700'

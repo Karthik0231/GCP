@@ -38,14 +38,23 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
     setActiveTopicId,
     topicProgress,
     setTopicProgress,
-    resetTopicProgress
+    resetTopicProgress,
+    recordActivity
   } = useLearningStore();
 
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copyError, setCopyError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const savedTopicProgress = topicProgress[topic.id] || { activeSection: 'console' as const, quizAnswers: {}, completedExerciseSteps: [], updatedAt: '' };
-  const activeTab = savedTopicProgress.activeSection;
+  const storedTopicProgress = topicProgress[topic.id];
+  const savedTopicProgress = {
+    activeSection: storedTopicProgress?.activeSection ?? 'console' as const,
+    quizAnswers: storedTopicProgress?.quizAnswers || {},
+    completedExerciseSteps: Array.isArray(storedTopicProgress?.completedExerciseSteps) ? storedTopicProgress.completedExerciseSteps : [],
+    updatedAt: storedTopicProgress?.updatedAt || '',
+  };
+  const activeTab = savedTopicProgress.activeSection === 'terraform' && !topic.terraformSnippet
+    ? 'console'
+    : savedTopicProgress.activeSection;
   const selectedQuizAnswers = savedTopicProgress.quizAnswers;
   const completedLabSteps = Object.fromEntries(savedTopicProgress.completedExerciseSteps.map(step => [step, true]));
 
@@ -86,6 +95,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
 
   const handleSelectQuiz = (questionIdx: number, optionIdx: number) => {
     setTopicProgress(topic.id, { quizAnswers: { ...selectedQuizAnswers, [questionIdx]: optionIdx } });
+    recordActivity();
   };
 
   const toggleLabStep = (stepIdx: number) => {
@@ -93,6 +103,24 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
       ? savedTopicProgress.completedExerciseSteps.filter(step => step !== stepIdx)
       : [...savedTopicProgress.completedExerciseSteps, stepIdx];
     setTopicProgress(topic.id, { completedExerciseSteps });
+    recordActivity();
+  };
+
+  const resetTopicLearning = () => {
+    if (window.confirm('Reset this topic learning progress? Quiz answers and exercise checks for this topic will be cleared. Bookmarks and other topics stay unchanged.')) {
+      resetTopicProgress(topic.id);
+    }
+  };
+
+  const selectImplementationTab = (tab: 'console' | 'cli' | 'terraform') => {
+    setTopicProgress(topic.id, { activeSection: tab });
+  };
+
+  const moveImplementationTab = (tab: 'console' | 'cli' | 'terraform', direction: 1 | -1) => {
+    const tabs = topic.terraformSnippet ? ['console', 'cli', 'terraform'] : ['console', 'cli'];
+    const index = tabs.indexOf(tab);
+    const nextIndex = (index + direction + tabs.length) % tabs.length;
+    selectImplementationTab(tabs[nextIndex] as 'console' | 'cli' | 'terraform');
   };
 
   return (
@@ -117,6 +145,9 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
           <div className="flex items-center gap-2">
             {/* Mark as Completed Button */}
             <button
+              type="button"
+              aria-pressed={isCompleted}
+              aria-label={isCompleted ? 'Mark topic incomplete' : 'Mark topic complete'}
               onClick={() => toggleTopicCompletion(topic.id)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 isCompleted
@@ -130,6 +161,9 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
 
             {/* Bookmark button */}
             <button
+              type="button"
+              aria-pressed={isBookmarked}
+              aria-label={isBookmarked ? 'Remove topic bookmark' : 'Bookmark topic'}
               onClick={() => toggleBookmark(topic.id)}
               className={`p-2 rounded-lg border text-xs transition-colors ${
                 isBookmarked 
@@ -141,8 +175,18 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
               <Bookmark className="w-4 h-4" />
             </button>
 
+            <button
+              type="button"
+              onClick={resetTopicLearning}
+              className="hidden sm:inline-flex px-2 py-1.5 rounded-lg border border-slate-800 text-[11px] text-slate-400 hover:text-white hover:bg-slate-800/60"
+            >
+              Reset learning
+            </button>
+
             {/* Close Button */}
             <button
+              type="button"
+              aria-label="Close topic reader"
               onClick={onClose}
               className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               title="Close (Esc)"
@@ -175,6 +219,29 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
                 Prerequisites: {topic.prerequisites.join(', ')}
               </span>
             )}
+          </div>
+
+          <div aria-label="Implementation path preference" className="flex flex-wrap gap-2">
+            {(['console', 'cli', 'terraform'] as const).filter(tab => tab !== 'terraform' || topic.terraformSnippet).map(tab => (
+              <button
+                type="button"
+                key={tab}
+                aria-pressed={activeTab === tab}
+                onClick={() => selectImplementationTab(tab)}
+                className={`rounded-lg border px-3 py-2 text-xs font-medium capitalize focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${activeTab === tab ? 'border-cyan-500/60 bg-cyan-500/15 text-cyan-200' : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200'}`}
+              >
+                {tab === 'cli' ? 'CLI' : tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-xs text-slate-400 space-y-1">
+            <p>Content status: <span className="text-cyan-300">{topic.verificationStatus || 'unverified'}</span></p>
+            {(topic.lastVerifiedAt || topic.lastVerified) && <p>Documentation review: {topic.lastVerifiedAt || topic.lastVerified}</p>}
+            {topic.costWarning && <p className="text-amber-300">Cost note: {topic.costWarning}</p>}
+            <a href={topic.docUrl} target="_blank" rel="noreferrer" className="text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1">
+              Official documentation <ExternalLink className="w-3 h-3" />
+            </a>
           </div>
 
           {/* Section 1: Simple Explanation & Analogy */}
@@ -224,9 +291,18 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
               <div className="text-cyan-400 text-xs font-mono uppercase tracking-wider font-bold">
                 4. Implementation Workflows
               </div>
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+              <div role="tablist" aria-label="Implementation workflows" className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
                 <button
-                  onClick={() => setActiveTab('console')}
+                  type="button"
+                  role="tab"
+                  id="topic-implementation-tab-console"
+                  aria-controls="topic-implementation-panel-console"
+                  aria-selected={activeTab === 'console'}
+                  onClick={() => selectImplementationTab('console')}
+                  onKeyDown={(event) => {
+                    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); moveImplementationTab('console', 1); }
+                    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') { event.preventDefault(); moveImplementationTab('console', -1); }
+                  }}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
                     activeTab === 'console' 
                       ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' 
@@ -237,7 +313,16 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
                   Console
                 </button>
                 <button
-                  onClick={() => setActiveTab('cli')}
+                  type="button"
+                  role="tab"
+                  id="topic-implementation-tab-cli"
+                  aria-controls="topic-implementation-panel-cli"
+                  aria-selected={activeTab === 'cli'}
+                  onClick={() => selectImplementationTab('cli')}
+                  onKeyDown={(event) => {
+                    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); moveImplementationTab('cli', 1); }
+                    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') { event.preventDefault(); moveImplementationTab('cli', -1); }
+                  }}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
                     activeTab === 'cli' 
                       ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' 
@@ -249,7 +334,16 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
                 </button>
                 {topic.terraformSnippet && (
                   <button
-                    onClick={() => setActiveTab('terraform')}
+                    type="button"
+                    role="tab"
+                    id="topic-implementation-tab-terraform"
+                    aria-controls="topic-implementation-panel-terraform"
+                    aria-selected={activeTab === 'terraform'}
+                    onClick={() => selectImplementationTab('terraform')}
+                    onKeyDown={(event) => {
+                      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); moveImplementationTab('terraform', 1); }
+                      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') { event.preventDefault(); moveImplementationTab('terraform', -1); }
+                    }}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
                       activeTab === 'terraform' 
                         ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' 
@@ -265,7 +359,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
 
             {/* Tab: Google Cloud Console */}
             {activeTab === 'console' && (
-              <div className="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+              <div id="topic-implementation-panel-console" role="tabpanel" aria-labelledby="topic-implementation-tab-console" className="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
                 <div className="text-xs font-mono text-cyan-400 font-semibold mb-2">Google Cloud Console Walkthrough:</div>
                 {topic.consoleSteps.map((step, idx) => (
                   <div key={idx} className="flex gap-3 text-xs leading-relaxed">
@@ -283,7 +377,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
 
             {/* Tab: gcloud CLI */}
             {activeTab === 'cli' && (
-              <div className="space-y-4">
+              <div id="topic-implementation-panel-cli" role="tabpanel" aria-labelledby="topic-implementation-tab-cli" className="space-y-4">
                 {topic.cliCommands.map((cmd, idx) => (
                   <div key={idx} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
                     <div className="flex items-center justify-between gap-2">
@@ -328,7 +422,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
 
             {/* Tab: Terraform */}
             {activeTab === 'terraform' && topic.terraformSnippet && (
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <div id="topic-implementation-panel-terraform" role="tabpanel" aria-labelledby="topic-implementation-tab-terraform" className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-400">Declarative Infrastructure as Code (HCL):</span>
                   <button
@@ -425,7 +519,6 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
                       return (
                         <button
                           key={oIdx}
-                          disabled={isAnswered}
                           onClick={() => handleSelectQuiz(qIdx, oIdx)}
                           className={`w-full text-left p-2.5 rounded-lg border text-xs transition-colors flex items-center justify-between ${btnStyle}`}
                         >
@@ -461,18 +554,18 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
                 {topic.labTask.tasks.map((task, idx) => {
                   const isDone = !!completedLabSteps[idx];
                   return (
-                    <div 
+                    <div
                       key={idx}
-                      onClick={() => toggleLabStep(idx)}
                       className={`flex items-start gap-2.5 p-2 rounded-lg cursor-pointer text-xs transition-colors ${
                         isDone ? 'bg-emerald-950/30 text-emerald-300' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-900'
                       }`}
                     >
-                      <input 
-                        type="checkbox" 
-                        checked={isDone} 
-                        readOnly 
-                        className="mt-0.5 rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-0 cursor-pointer"
+                      <input
+                        type="checkbox"
+                        checked={isDone}
+                        onChange={() => toggleLabStep(idx)}
+                        aria-label={`Complete exercise step ${idx + 1}`}
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-0"
                       />
                       <span className={isDone ? 'line-through text-slate-400' : ''}>{task}</span>
                     </div>

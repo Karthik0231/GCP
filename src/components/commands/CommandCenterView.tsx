@@ -17,6 +17,7 @@ export const CommandCenterView: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const categories = ['All', ...Array.from(new Set(COMMAND_LIBRARY.map(c => c.category)))];
 
@@ -36,14 +37,23 @@ export const CommandCenterView: React.FC = () => {
     return true;
   });
 
-  const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const handleCopy = async (text: string, id: string) => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
+      await navigator.clipboard.writeText(text);
+      setCopyError(null);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      setCopiedId(null);
+      setCopyError('Copy failed. Select the command and copy it manually.');
+      setTimeout(() => setCopyError(null), 4000);
+    }
   };
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
+      <p className="sr-only" aria-live="polite">{copyError || (copiedId ? 'Copied to clipboard.' : '')}</p>
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
@@ -51,7 +61,7 @@ export const CommandCenterView: React.FC = () => {
           Command Center & CLI Reference
         </h2>
         <p className="text-slate-400 text-sm mt-1">
-          Searchable, verified Google Cloud CLI commands with syntax parameters, real-world examples, and expected outputs.
+          Searchable Google Cloud CLI reference with syntax, real-world examples, expected outputs, and review metadata.
         </p>
       </div>
 

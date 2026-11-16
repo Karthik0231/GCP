@@ -127,14 +127,19 @@ export const useLearningStore = create<LearningState>()(
           if (streak === 0) set({ streak: 1 });
           return;
         }
-        const yesterday = localDateKey(new Date(Date.now() - 86400000));
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterday = localDateKey(yesterdayDate);
         set({ streak: lastActiveDate === yesterday ? streak + 1 : 1, lastActiveDate: today });
       },
 
       resetProgress: () => set({
         completedTopics: [],
         inProgressTopics: [],
-        bookmarks: [],
+        labProgress: {},
+        topicProgress: {},
+        streak: 0,
+        lastActiveDate: localDateKey(),
       }),
       setLabProgress: (labId, progress) => set((state) => ({
         labProgress: {
@@ -171,7 +176,7 @@ export const useLearningStore = create<LearningState>()(
     }),
     {
       name: 'gcp-forge-learning-progress',
-      version: 1,
+      version: 2,
       migrate: (persistedState: unknown) => {
         const state = (persistedState || {}) as Record<string, unknown>;
         const legacyProgress = (state.labProgress || {}) as Record<string, Partial<LabProgress> & { activeStep?: number; completedSteps?: number[] }>;
@@ -184,7 +189,17 @@ export const useLearningStore = create<LearningState>()(
             updatedAt: progress.updatedAt || new Date().toISOString(),
           };
         });
-        return { ...state, labProgress };
+        const legacyTopicProgress = (state.topicProgress || {}) as Record<string, Partial<TopicProgress>>;
+        const topicProgress: Record<string, TopicProgress> = {};
+        Object.entries(legacyTopicProgress).forEach(([topicId, progress]) => {
+          topicProgress[topicId] = {
+            activeSection: progress.activeSection || 'console',
+            quizAnswers: progress.quizAnswers || {},
+            completedExerciseSteps: Array.isArray(progress.completedExerciseSteps) ? progress.completedExerciseSteps : [],
+            updatedAt: progress.updatedAt || new Date().toISOString(),
+          };
+        });
+        return { ...state, labProgress, topicProgress };
       },
       partialize: (state) => ({
         completedTopics: state.completedTopics,

@@ -164,6 +164,7 @@ export interface ConsoleGuideStep {
   why: string;
   expectedResult: string;
   warning?: string;
+  verification?: string;
 }
 
 export interface LabProgress {
