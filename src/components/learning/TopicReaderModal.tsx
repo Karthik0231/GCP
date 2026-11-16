@@ -129,7 +129,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
       <div className="mx-auto mb-3 w-full max-w-5xl rounded-lg border border-slate-800 bg-slate-950/80 px-3 py-2 text-[11px] text-slate-400">
         <span className="font-semibold text-cyan-300">Learning path:</span> understand · architecture · console · CLI/Terraform · practise · verify · troubleshoot · revise
       </div>
-      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="topic-reader-title" className="relative w-full max-w-4xl bg-[#0b0f19] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh] focus:outline-none">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="topic-reader-title" className="forge-reader relative w-full max-w-4xl border rounded-2xl overflow-hidden flex flex-col my-auto max-h-[92vh] focus:outline-none">
         
         {/* Sticky Header Bar */}
         <div className="sticky top-0 z-30 bg-[#0e1526]/95 backdrop-blur border-b border-slate-800 px-5 py-4 flex items-center justify-between gap-4">
@@ -198,7 +198,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="overflow-y-auto px-5 sm:px-8 py-6 space-y-8 text-slate-200 text-sm">
+        <div className="forge-reader-content overflow-y-auto px-5 sm:px-8 py-6 space-y-8 text-slate-200 text-sm">
           
           {/* Metadata pill row */}
           <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-slate-400 pb-4 border-b border-slate-800/80">

@@ -23,14 +23,14 @@ export const ArchitectureView: React.FC = () => {
   const activeNode = activeArch.nodes.find(n => n.id === selectedNodeId) || activeArch.nodes[0];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8">
+    <div className="forge-page w-full max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+      <div className="forge-page-header mb-6">
+        <h2 className="forge-page-title text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
           <Layers className="w-7 h-7 text-purple-400" />
           Interactive Architecture Explorer
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="forge-page-lede text-slate-400 text-sm mt-1">
           Explore real-world Google Cloud production topologies. Click components in the diagram to inspect their network responsibilities, security boundaries, and protocol handoffs.
         </p>
       </div>
@@ -60,7 +60,7 @@ export const ArchitectureView: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left: Interactive Diagram Stream */}
-        <div className="lg:col-span-8 bg-[#0b101d] border border-slate-800 rounded-2xl p-6 space-y-6">
+        <div className="forge-panel lg:col-span-8 bg-[#0b101d] border border-slate-800 rounded-2xl p-6 space-y-6">
           <div>
             <span className="text-xs font-mono uppercase text-purple-400 font-bold tracking-wider">
               {activeArch.category}
@@ -142,7 +142,7 @@ export const ArchitectureView: React.FC = () => {
         </div>
 
         {/* Right: Selected Node Deep Dive Inspector */}
-        <div className="lg:col-span-4 bg-[#0b101d] border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div className="forge-panel lg:col-span-4 bg-[#0b101d] border border-slate-800 rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <span className="text-xs font-mono uppercase text-purple-400 font-bold tracking-wider flex items-center gap-1.5">
               <Info className="w-4 h-4" />

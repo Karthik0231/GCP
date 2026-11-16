@@ -34,14 +34,14 @@ export const InterviewView: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+    <div className="forge-page w-full max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+      <div className="forge-page-header mb-6">
+        <h2 className="forge-page-title text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
           <Sparkles className="w-7 h-7 text-yellow-400" />
           Revision & Cloud Architect Interview Prep
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="forge-page-lede text-slate-400 text-sm mt-1">
           Architectural trade-offs, concept comparison matrices, and scenario-based interview questions explaining WHY decisions are made in production systems.
         </p>
       </div>
@@ -51,6 +51,7 @@ export const InterviewView: React.FC = () => {
         <span className="text-xs font-mono text-slate-400">Target Role:</span>
         {levels.map(lvl => (
           <button
+            type="button"
             key={lvl}
             onClick={() => setSelectedLevel(lvl)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -74,9 +75,12 @@ export const InterviewView: React.FC = () => {
               className="bg-[#0b101d] border border-slate-800 rounded-xl overflow-hidden transition-all shadow-md"
             >
               {/* Question Header Accordion Trigger */}
-              <div
+              <button
+                type="button"
+                aria-expanded={isExpanded}
+                aria-controls={`interview-answer-${item.id}`}
                 onClick={() => toggleExpand(item.id)}
-                className="p-4 sm:p-5 flex items-start justify-between gap-4 cursor-pointer hover:bg-slate-900/50 transition-colors"
+                className="w-full text-left p-4 sm:p-5 flex items-start justify-between gap-4 hover:bg-slate-900/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               >
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2 text-[10px] font-mono">
@@ -92,14 +96,14 @@ export const InterviewView: React.FC = () => {
                   </h3>
                 </div>
 
-                <button className="p-1 rounded-lg text-slate-400 hover:text-white flex-shrink-0 mt-1">
+                <span aria-hidden="true" className="p-1 rounded-lg text-slate-400 flex-shrink-0 mt-1">
                   {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                </button>
-              </div>
+                </span>
+              </button>
 
               {/* Accordion Body */}
               {isExpanded && (
-                <div className="px-5 pb-5 pt-1 space-y-4 text-xs leading-relaxed border-t border-slate-800/80">
+                <div id={`interview-answer-${item.id}`} className="px-5 pb-5 pt-1 space-y-4 text-xs leading-relaxed border-t border-slate-800/80">
                   
                   {/* Short Answer (Elevator Pitch) */}
                   <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">

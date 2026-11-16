@@ -63,14 +63,14 @@ export const TopicExplorer: React.FC = () => {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+    <div className="forge-page w-full max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+      <div className="forge-page-header mb-6">
+        <h2 className="forge-page-title text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
           <BookOpen className="w-7 h-7 text-cyan-400" />
           Curriculum Topic Explorer
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="forge-page-lede text-slate-400 text-sm mt-1">
           Search and filter the complete Google Cloud engineering syllabus across all 20 curriculum phases.
         </p>
       </div>

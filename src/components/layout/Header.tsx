@@ -32,11 +32,11 @@ export const Header: React.FC = () => {
   const progression = calculateProgression(completedTopics.length, totalTopics);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#080c14]/90 backdrop-blur-md">
+    <header className="forge-header sticky top-0 z-40 w-full border-b border-slate-800 bg-[#080c14]/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
         {/* Brand Logo & Name */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveView('roadmap')}>
+        <button type="button" aria-label="Open roadmap" className="flex items-center gap-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg" onClick={() => setActiveView('roadmap')}>
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-400/30">
             <Compass className="w-5 h-5 text-white animate-pulse-subtle" />
           </div>
@@ -47,11 +47,11 @@ export const Header: React.FC = () => {
             </div>
             <p className="text-[11px] text-slate-400 font-mono hidden sm:block">Google Cloud Engineering</p>
           </div>
-        </div>
+        </button>
 
         {/* Navigation Tabs */}
-        <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-800/80">
-          <button
+        <nav aria-label="Primary navigation" className="forge-nav hidden lg:flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-800/80">
+          <button type="button"
             onClick={() => setActiveView('roadmap')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'roadmap'
@@ -59,11 +59,11 @@ export const Header: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
             }`}
           >
-            <Compass className="w-3.5 h-3.5 text-cyan-400" />
+            <Compass className="w-3.5 h-3.5 text-slate-400" />
             Roadmap
           </button>
 
-          <button
+          <button type="button"
             onClick={() => setActiveView('topics')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'topics'
@@ -75,7 +75,7 @@ export const Header: React.FC = () => {
             Explore Topics
           </button>
 
-          <button
+          <button type="button"
             onClick={() => setActiveView('labs')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'labs'
@@ -83,11 +83,11 @@ export const Header: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
             }`}
           >
-            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+            <Activity className="w-3.5 h-3.5 text-slate-400" />
             Labs
           </button>
 
-          <button
+          <button type="button"
             onClick={() => setActiveView('projects')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'projects'
@@ -95,11 +95,11 @@ export const Header: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
             }`}
           >
-            <FolderKanban className="w-3.5 h-3.5 text-amber-400" />
+            <FolderKanban className="w-3.5 h-3.5 text-slate-400" />
             Projects
           </button>
 
-          <button
+          <button type="button"
             onClick={() => setActiveView('commands')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'commands'
@@ -107,11 +107,11 @@ export const Header: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
             }`}
           >
-            <Terminal className="w-3.5 h-3.5 text-blue-400" />
+            <Terminal className="w-3.5 h-3.5 text-slate-400" />
             Commands
           </button>
 
-          <button
+          <button type="button"
             onClick={() => setActiveView('architecture')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'architecture'
@@ -119,11 +119,11 @@ export const Header: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
             }`}
           >
-            <Layers className="w-3.5 h-3.5 text-purple-400" />
+            <Layers className="w-3.5 h-3.5 text-slate-400" />
             Architectures
           </button>
 
-          <button
+          <button type="button"
             onClick={() => setActiveView('interview')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               activeView === 'interview'
@@ -131,7 +131,7 @@ export const Header: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+            <Sparkles className="w-3.5 h-3.5 text-slate-400" />
             Revision
           </button>
         </nav>
@@ -139,9 +139,9 @@ export const Header: React.FC = () => {
         {/* Right Actions: Search, Streak, Level Progress, Theme */}
         <div className="flex items-center gap-2.5">
           {/* Search Trigger button */}
-          <button
+          <button type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-2 bg-slate-900 border border-slate-700/80 hover:border-slate-600 px-2.5 py-1.5 rounded-lg text-xs text-slate-300 transition-colors shadow-inner"
+            className="forge-control flex items-center gap-2 px-2.5 py-1.5 text-xs transition-colors shadow-inner"
             title="Search curriculum, commands, labs (Cmd+K)"
           >
             <Search className="w-3.5 h-3.5 text-slate-400" />
@@ -156,9 +156,10 @@ export const Header: React.FC = () => {
           </div>
 
           {/* User Level Progression Badge */}
-          <div 
+          <button type="button"
+            aria-label="Open roadmap progress"
             onClick={() => setActiveView('roadmap')}
-            className="flex items-center gap-2 bg-slate-900/90 border border-slate-700 hover:border-cyan-500/50 px-2.5 py-1 rounded-lg cursor-pointer transition-all"
+            className="forge-control flex items-center gap-2 px-2.5 py-1 transition-all"
             title={`${completedTopics.length} of ${totalTopics} topics mastered (${progression.percent}%)`}
           >
             <Award className="w-4 h-4 text-cyan-400" />
@@ -169,10 +170,11 @@ export const Header: React.FC = () => {
             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[11px] font-mono font-bold text-cyan-400 border border-cyan-500/30">
               {progression.percent}%
             </div>
-          </div>
+          </button>
 
           {/* Theme switcher */}
-          <button 
+          <button type="button"
+            aria-label="Toggle color theme"
             onClick={toggleTheme}
             className="p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent hover:border-slate-700 transition-colors"
             title="Toggle color theme"

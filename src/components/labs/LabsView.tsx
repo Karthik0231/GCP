@@ -83,15 +83,15 @@ export const LabsView: React.FC = () => {
 
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8">
+    <div className="forge-page w-full max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-6">
+      <div className="forge-page-header mb-6">
         <p className="sr-only" aria-live="polite">{copyError || (copiedIndex !== null ? 'Copied to clipboard.' : '')}</p>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+        <h2 className="forge-page-title text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
           <Activity className="w-7 h-7 text-emerald-400" />
           Hands-on Lab System
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="forge-page-lede text-slate-400 text-sm mt-1">
           Perform production-grade operations in your own Google Cloud account with exact gcloud CLI and Console guidance, verification checklists, and cleanup commands.
         </p>
       </div>
@@ -145,7 +145,7 @@ export const LabsView: React.FC = () => {
         </div>
 
         {/* Active Lab Detail Panel */}
-        <div className="lg:col-span-8 bg-[#0b101d] border border-slate-800 rounded-2xl p-5 sm:p-7 space-y-6">
+        <div className="forge-panel lg:col-span-8 bg-[#0b101d] border border-slate-800 rounded-2xl p-5 sm:p-7 space-y-6">
           
           {/* Lab Top Banner */}
           <div>

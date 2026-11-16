@@ -26,11 +26,11 @@ export const ResponsiveRoadmap: React.FC = () => {
 
   return (
     <>
-      <div className="hidden lg:block">
+      <div className="forge-roadmap hidden lg:block">
         <RoadmapCanvas />
       </div>
 
-      <div className="min-h-[calc(100vh-4rem)] bg-[#080c14] px-4 py-5 lg:hidden">
+      <div className="forge-roadmap min-h-[calc(100vh-4rem)] bg-[#080c14] px-4 py-5 lg:hidden">
         <div className="mx-auto max-w-xl">
           <div className="mb-5">
             <div className="mb-2 flex items-center gap-2 text-cyan-300">

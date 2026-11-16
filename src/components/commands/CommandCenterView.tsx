@@ -52,11 +52,11 @@ export const CommandCenterView: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+    <div className="forge-page w-full max-w-6xl mx-auto px-4 py-8">
       <p className="sr-only" aria-live="polite">{copyError || (copiedId ? 'Copied to clipboard.' : '')}</p>
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+      <div className="forge-page-header mb-6">
+        <h2 className="forge-page-title text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
           <Terminal className="w-7 h-7 text-cyan-400" />
           Command Center & CLI Reference
         </h2>

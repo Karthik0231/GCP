@@ -1,4 +1,5 @@
 import React from 'react';
+import './styles/design-system.css';
 import { Header } from './components/layout/Header';
 import { ResponsiveRoadmap } from './components/roadmap/ResponsiveRoadmap';
 import { TopicExplorer } from './components/topics/TopicExplorer';
@@ -12,15 +13,15 @@ import { GlobalSearchModal } from './components/search/GlobalSearchModal';
 import { MobileNav } from './components/layout/MobileNav';
 import { useLearningStore } from './store/useLearningStore';
 import { TOPIC_NODES } from './data/curriculum';
-import { ExternalLink, Compass, ShieldCheck } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const { activeView, activeTopicId, setActiveTopicId } = useLearningStore();
+  const { activeView, activeTopicId, setActiveTopicId, theme } = useLearningStore();
 
   const activeTopic = activeTopicId ? TOPIC_NODES.find(t => t.id === activeTopicId) : null;
 
   return (
-    <div className="min-h-screen bg-[#080c14] pb-14 text-slate-100 flex flex-col font-sans lg:pb-0">
+    <div className="forge-app min-h-screen pb-14 flex flex-col font-sans lg:pb-0" data-theme={theme}>
       {/* Top Application Header */}
       <Header />
 
@@ -48,7 +49,7 @@ export const App: React.FC = () => {
       <MobileNav />
 
       {/* Application Footer */}
-      <footer className="w-full border-t border-slate-800/80 bg-[#060910] py-8 px-4 text-xs font-mono text-slate-400">
+      <footer className="forge-footer w-full border-t py-8 px-4 text-xs font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-300">GCP Forge</span>
@@ -72,7 +73,7 @@ export const App: React.FC = () => {
               rel="noopener noreferrer" 
               className="hover:text-cyan-400 transition-colors flex items-center gap-1"
             >
-              <span>Always Free Tier</span>
+              <span>Free Tier details</span>
               <ExternalLink className="w-3 h-3" />
             </a>
             <a 

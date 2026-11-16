@@ -72,7 +72,7 @@ export const RoadmapCanvas: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="w-full min-h-[calc(100vh-4rem)] bg-[#080c14] relative bg-tech-grid flex flex-col items-center">
+    <div ref={containerRef} className="forge-roadmap w-full min-h-[calc(100vh-4rem)] bg-[#080c14] relative bg-tech-grid flex flex-col items-center">
       
       {/* Hero Section */}
       <div className="w-full max-w-5xl px-4 pt-10 pb-6 text-center relative z-10">
