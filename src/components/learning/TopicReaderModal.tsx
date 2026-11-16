@@ -369,6 +369,12 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({ topic, onClo
                     <div>
                       <div className="font-semibold text-white mb-0.5">{step.title}</div>
                       <div className="text-slate-400">{step.instruction}</div>
+                      {step.navigation && <div className="mt-1 text-slate-300"><span className="text-cyan-300">Navigate:</span> {step.navigation}</div>}
+                      {step.setting && <div className="text-slate-300"><span className="text-cyan-300">Setting:</span> {step.setting}{step.exampleValue ? ` — ${step.exampleValue}` : ''}</div>}
+                      {step.why && <div className="text-slate-400"><span className="text-slate-300">Why:</span> {step.why}</div>}
+                      {step.expectedResult && <div className="text-emerald-300"><span className="text-emerald-400">Expected:</span> {step.expectedResult}</div>}
+                      {step.verification && <div className="text-cyan-300"><span className="text-cyan-400">Verify:</span> {step.verification}</div>}
+                      {step.warning && <div className="text-amber-300"><span className="text-amber-400">Warning:</span> {step.warning}</div>}
                     </div>
                   </div>
                 ))}

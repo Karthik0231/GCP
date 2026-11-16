@@ -21,6 +21,17 @@ export const ProjectsView: React.FC = () => {
   const [copyError, setCopyError] = useState<string | null>(null);
 
   const activeProject = REAL_WORLD_PROJECTS.find(p => p.id === selectedProjectId) || REAL_WORLD_PROJECTS[0];
+  const guidanceSections: { label: string; items?: string[] }[] = [
+    { label: 'Prerequisites', items: activeProject.prerequisites },
+    { label: 'Console path', items: activeProject.consoleImplementation },
+    { label: 'CLI path', items: activeProject.cliImplementation },
+    { label: 'Terraform path', items: activeProject.terraformImplementation },
+    { label: 'Secrets', items: activeProject.secretsManagement },
+    { label: 'Networking', items: activeProject.networking },
+    { label: 'Deployment', items: activeProject.deployment },
+    { label: 'Verification', items: activeProject.testing },
+    { label: 'Operations', items: [...(activeProject.logging || []), ...(activeProject.monitoring || [])] },
+  ];
 
   const handleCopy = async (text: string, idx: number) => {
     try {
@@ -126,20 +137,10 @@ export const ProjectsView: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              ['Prerequisites', activeProject.prerequisites],
-              ['Console path', activeProject.consoleImplementation],
-              ['CLI path', activeProject.cliImplementation],
-              ['Terraform path', activeProject.terraformImplementation],
-              ['Secrets', activeProject.secretsManagement],
-              ['Networking', activeProject.networking],
-              ['Deployment', activeProject.deployment],
-              ['Verification', activeProject.testing],
-              ['Operations', [...(activeProject.logging || []), ...(activeProject.monitoring || [])]],
-            ].filter(([, items]) => items?.length).map(([label, items]) => (
-              <div key={label} className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                <h4 className="mb-2 text-[11px] font-mono uppercase font-bold tracking-wider text-cyan-400">{label}</h4>
-                <ul className="space-y-1 text-xs text-slate-300">{items?.map(item => <li key={item}>• {item}</li>)}</ul>
+            {guidanceSections.filter(section => section.items?.length).map(section => (
+              <div key={section.label} className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                <h4 className="mb-2 text-[11px] font-mono uppercase font-bold tracking-wider text-cyan-400">{section.label}</h4>
+                <ul className="space-y-1 text-xs text-slate-300">{section.items?.map(item => <li key={item}>• {item}</li>)}</ul>
               </div>
             ))}
           </div>

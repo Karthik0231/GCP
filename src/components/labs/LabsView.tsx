@@ -39,15 +39,18 @@ export const LabsView: React.FC = () => {
   const guideStep = guideSteps[savedProgress.activePhase] || guideSteps[0];
   const hasLabProgress = savedProgress.activePhase > 0 || savedProgress.completedPhases.length > 0 || savedProgress.completedVerificationItems.length > 0;
   const verificationItemId = (item: string) => `verification:${item}`;
+  const verificationIds = (item: string, index: number) => [verificationItemId(item), `verification-${index}`, `${activeLab.id}-check-${index}`];
+  const isVerificationItemComplete = (item: string, index: number) => verificationIds(item, index).some(id => savedProgress.completedVerificationItems.includes(id));
 
   const setGuideStep = (step: number) => setLabProgress(activeLab.id, { activePhase: step });
   const moveExecutionTab = (direction: 1 | -1) => {
     setActiveStepTab(activeStepTab === 'cli' && direction === 1 ? 'console' : activeStepTab === 'console' && direction === -1 ? 'cli' : activeStepTab);
   };
-  const toggleVerificationItem = (itemId: string) => {
-    const completedVerificationItems = savedProgress.completedVerificationItems.includes(itemId)
-      ? savedProgress.completedVerificationItems.filter(value => value !== itemId)
-      : [...savedProgress.completedVerificationItems, itemId];
+  const toggleVerificationItem = (item: string, index: number) => {
+    const ids = verificationIds(item, index);
+    const completedVerificationItems = ids.some(id => savedProgress.completedVerificationItems.includes(id))
+      ? savedProgress.completedVerificationItems.filter(value => !ids.includes(value))
+      : [...savedProgress.completedVerificationItems, verificationItemId(item)];
     setLabProgress(activeLab.id, { completedVerificationItems });
     recordActivity();
   };
@@ -209,7 +212,7 @@ export const LabsView: React.FC = () => {
               {guideStep === 'Prepare' && <div className="space-y-2"><p className="text-slate-300">Prepare identity, APIs, quota, and billing before creating resources.</p><p className="text-xs text-slate-400">Role boundary: an administrator may need to enable APIs or grant project IAM. Learner permissions: {activeLab.requiredPermissions?.join(', ') || 'See provider documentation and project IAM.'}</p>{activeLab.setupSteps?.map(step => <p key={step} className="text-xs text-slate-400">• {step}</p>)}</div>}
               {guideStep === 'Console' && (activeLab.consoleGuide?.length ? <ol className="list-decimal pl-5 space-y-3">{activeLab.consoleGuide.map(step => <li key={step.navigation} className="pl-1 text-slate-300"><span className="font-semibold text-cyan-200">{step.navigation}</span><br />{step.action}{step.setting && <><br /><span className="text-xs text-slate-400">Setting: {step.setting}{step.exampleValue ? ` — ${step.exampleValue}` : ''}</span></>}<br /><span className="text-xs text-slate-400">Why: {step.why}</span><br /><span className="text-xs text-emerald-300">Expected: {step.expectedResult}</span>{step.verification && <><br /><span className="text-xs text-cyan-300">Verify: {step.verification}</span></>}{step.warning && <><br /><span className="text-xs text-amber-300">Warning: {step.warning}</span></>}</li>)}</ol> : <><p className="text-xs text-amber-300">Detailed Console walkthrough not yet verified for this lab. Basic guidance follows.</p><ol className="list-decimal pl-5 space-y-2">{activeLab.consoleSteps.map(step => <li key={step} className="text-slate-300">{step}</li>)}</ol></>)}
               {guideStep === 'CLI' && <p className="text-slate-300">Use the CLI alternative in Execution Steps below. Copy commands one at a time and verify output before continuing.</p>}
-              {guideStep === 'Verify' && <div className="space-y-2">{activeLab.verificationSteps?.map(step => <p key={step} className="text-slate-300">• {step}</p>)}<p className="text-xs text-amber-300">Content status: {activeLab.verificationStatus === 'needs-review' ? 'Needs real-cloud review' : activeLab.verificationStatus || 'Not stated'}. Learner checklist is self-attested evidence only.</p>{activeLab.verificationChecklist.map(item => { const itemId = verificationItemId(item); return <label key={itemId} className="flex items-start gap-2 text-xs text-slate-300"><input type="checkbox" checked={savedProgress.completedVerificationItems.includes(itemId)} onChange={() => toggleVerificationItem(itemId)} />{item}</label>; })}</div>}
+              {guideStep === 'Verify' && <div className="space-y-2">{activeLab.verificationSteps?.map(step => <p key={step} className="text-slate-300">• {step}</p>)}<p className="text-xs text-amber-300">Content status: {activeLab.verificationStatus === 'needs-review' ? 'Needs real-cloud review' : activeLab.verificationStatus || 'Not stated'}. Learner checklist is self-attested evidence only.</p>{activeLab.verificationChecklist.map((item, index) => { const itemId = verificationItemId(item); return <label key={itemId} className="flex items-start gap-2 text-xs text-slate-300"><input type="checkbox" checked={isVerificationItemComplete(item, index)} onChange={() => toggleVerificationItem(item, index)} />{item}</label>; })}</div>}
               {guideStep === 'Troubleshoot' && <div className="space-y-2">{activeLab.troubleshootingSteps?.map(step => <p key={step} className="text-slate-300">• {step}</p>)}</div>}
               {guideStep === 'Cleanup' && <div className="space-y-2"><p className="text-rose-300">Run cleanup after verifying the result. Cleanup can delete resources.</p>{activeLab.cleanupSteps.map(step => <code key={step} className="block overflow-x-auto text-xs text-rose-200">{step}</code>)}</div>}
             </div>
@@ -325,9 +328,9 @@ export const LabsView: React.FC = () => {
               Verification Checklist
             </span>
             <div className="space-y-2">
-              {activeLab.verificationChecklist.map(item => {
+              {activeLab.verificationChecklist.map((item, index) => {
                 const itemId = verificationItemId(item);
-                const isChecked = savedProgress.completedVerificationItems.includes(itemId);
+                const isChecked = isVerificationItemComplete(item, index);
                 return (
                   <label
                     key={itemId}
@@ -340,7 +343,7 @@ export const LabsView: React.FC = () => {
                     <input
                       type="checkbox"
                       checked={isChecked}
-                      onChange={() => toggleVerificationItem(itemId)}
+                      onChange={() => toggleVerificationItem(item, index)}
                       aria-label={`Self-attest verification item: ${item}`}
                       className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-0"
                     />
